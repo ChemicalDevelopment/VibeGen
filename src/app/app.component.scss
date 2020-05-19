@@ -1,9 +1,10 @@
 /* style */
 
 
-$primary-color: #1976d2;
-$secondary-color: #b21966;
-$background-color: #333;
+$primary-color: #7e15b3;
+$secondary-color: #faa2e5;
+$text-color: #efefef;
+$background-color: #666;
 
 /* generic HTM elements */
 
@@ -23,6 +24,8 @@ p {
 
 body {
     background-color: $background-color;
+    color: $text-color;
+    min-height: 100vh;
 }
 
 .spacer {
@@ -34,24 +37,25 @@ body {
 
 .toolbar {
     position: absolute;
+    display: flex;
+    align-items: center;
     top: 0;
     left: 0;
     right: 0;
     height: 60px;
-    display: flex;
-    align-items: center;
     background-color: $primary-color;
-    color: white;
+    /* color: $secondary-color; */
     font-weight: 600;
+    font-size: 20px;
 }
 
 .toolbar img {
-    margin: 0 16px;
+    margin: 0 8px;
 }
 
 .toolbar #twitter-logo {
     height: 40px;
-    margin: 0 16px;
+    margin: 0 8px;
 }
 
 .toolbar #twitter-logo:hover {
@@ -72,6 +76,7 @@ body {
     margin: 82px auto 32px;
     padding: 0 16px;
     max-width: 960px;
+    min-height: 100vh;
     flex-direction: column;
     align-items: center;
 }
@@ -100,10 +105,12 @@ svg.material-icons:not(:last-child) {
     border-radius: 4px;
     border: 1px solid #eee;
     background-color: $background-color;
+    font-weight: 500;
+    font-size: 20px;
     height: 40px;
     width: 200px;
-    margin: 0 8px 16px;
-    padding: 16px;
+    margin: 0 8px 10px;
+    padding: 10px;
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -166,12 +173,12 @@ svg#rocket-smoke {
 a,
 a:visited,
 a:hover {
-    color: $primary-color;
+    color: $text-color;
     text-decoration: none;
 }
 
 a:hover {
-    color: $primary-color;
+    color: $text-color;
 }
 
 .terminal {
@@ -232,6 +239,10 @@ footer {
     display: flex;
     align-items: center;
     line-height: 20px;
+    flex-shrink: 0;
+    
+    position: fixed;
+    bottom: 0;
 }
 
 footer a {

@@ -20,6 +20,8 @@
     "@angular/platform-browser-dynamic": "~9.1.7",
     "@angular/router": "~9.1.7",
     "rxjs": "~6.5.4",
+    "seedrandom": "^3.0.5",
+    "tone": "^13.8.25",
     "tslib": "^1.10.0",
     "zone.js": "~0.10.2"
   },
