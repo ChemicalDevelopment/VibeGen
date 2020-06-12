@@ -2,7 +2,6 @@ import { Component, ViewEncapsulation } from '@angular/core';
 import Tone from 'tone';
 import SeedRandom from 'seedrandom';
 
-
 // Import instruments
 import Snare from './snare';
 
@@ -13,7 +12,22 @@ import Snare from './snare';
  */
 const scaleMidi = {
     'major': [0, 2, 4, 5, 7, 9, 11],
-}
+    'minor': [0, 2, 3, 5, 7, 8, 10],
+};
+
+/*
+ *
+ *
+ */
+const chordProgs = {
+    "I-V-vi-IV": [
+        scaleMidi.major.map(i => i + 0),
+        scaleMidi.major.map(i => i + 7),
+        scaleMidi.major.map(i => i + 5),
+        scaleMidi.major.map(i => i + 9),
+    ]
+};
+
 
 // calculate the 'hz' from a given midi note
 // For reference: middle C is 60
@@ -93,50 +107,53 @@ class Vibe {
             }).toMaster(),
 
 
-            'MainVoice': new Tone.PluckSynth().toMaster(),
+            'MainVoice':  new Tone.Synth().toMaster(),
 
-            'ChordSupport': new Tone.PolySynth(6, Tone.Synth, {
+            'ChordSupport': new Tone.PolySynth(8, Tone.AMSynth, {
                 oscillator : {
-                      type : "square"
-                  }
-              }).toMaster(),
-
+                    type : "square"
+                }
+            }).toMaster(),
         };
 
         var midiBase = 60;
 
-        var barsPerLoop = 2;
+        var barsPerLoop = 4;
+        console.log("starting loop!")
 
         self.loop = new Tone.Loop(function(time) {
 
-            const chords = [
-                [0, 4, 7],
-                [0-3, 3-3, 7-3],
-            ];
+            const chords = chordProgs["I-V-vi-IV"];
+            console.log("LOOP");
 
-            chords.forEach((chord, i) => {
-                chord.forEach((note, j) => {
-                    self.inst.ChordSupport.triggerAttackRelease(fromMIDI(midiBase + note), "4n", time + Tone.Time("1:0:0") * i);
+            for (var bar = 0; bar < barsPerLoop; ++bar) {
+                
+                // start time for the bar
+                var stime = time + Tone.Time("1:0:0") * bar;
+                var chord = chords[bar];
 
-                });
-            });
+                // loop through chord
+                /*([0, 2, 4]).forEach(i => {
+                    self.inst.ChordSupport.triggerAttackRelease(fromMIDI(midiBase + chord[i]), "4n", stime);
+                });*/
 
-            for (var i = 0; i < 8 * barsPerLoop; ++i) {
-                var curNote = midiBase + getRandom(scaleMidi.major, self.RNG);
-                self.inst.MainVoice.triggerAttackRelease(fromMIDI(curNote), "8n", time + Tone.Time("8n") * i);
+                for (var beat = 0; beat < 4; ++beat) {
+                    self.inst.Kick.triggerAttackRelease('C1', "8n", stime + Tone.Time("4n") * beat);
+                }
+                for (var beat = 1; beat < 4; beat += 2) {
+                    self.inst.Snare.triggerAttackRelease("8n", stime + Tone.Time("4n") * beat);
+                }
+
+                for (var beat = 0; beat < 4; ++beat) {
+                    self.inst.OpenHat.triggerAttackRelease("8n", stime + Tone.Time("8n") * (2 * beat + 1));
+                }
+
+                for (var beat = 0; beat < 8; ++beat) {
+                    var curNote = midiBase + chord[getRandom([0, 2, 4, 5, 6], self.RNG)] - 12;
+                    self.inst.MainVoice.triggerAttackRelease(fromMIDI(curNote), "4n", stime + Tone.Time("8n") * beat);
+                }
             }
 
-            for (var i = 0; i < 4 * barsPerLoop; ++i) {
-                self.inst.Kick.triggerAttackRelease('C1', "8n", time + Tone.Time("4n") * i);
-            }
-
-            for (var i = 1; i < 4 * barsPerLoop; i += 2) {
-                self.inst.Snare.triggerAttackRelease("8n", time + Tone.Time("4n") * i);
-            }
-
-            for (var i = 1; i < 8 * barsPerLoop; i += 2) {
-                self.inst.OpenHat.triggerAttackRelease("16n", time + Tone.Time("8n") * i);
-            }
 
         }, `${barsPerLoop}:0:0`);
     }
@@ -177,8 +194,7 @@ export class AppComponent {
     // called when it's created
     constructor() {
 
-        // begin the transport (for ToneJS)
-        Tone.Transport.start();
+
 
 
         // construct a generator
@@ -186,6 +202,9 @@ export class AppComponent {
 
         // start the vibe
         this.vibe.start();
+
+        // begin the transport (for ToneJS)
+        Tone.Transport.start();
 
     }
 }
